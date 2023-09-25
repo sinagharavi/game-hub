@@ -1,32 +1,36 @@
-import { GameQuery } from "../App";
-import useData from "./useData";
+import { useState, useEffect } from "react";
+import apiClient from "../services/api-client";
+import { CanceledError } from "axios";
 
-export interface Platform {
-  id: number;
-  name: string;
-  slug: string;
-}
 export interface Game {
   id: number;
   name: string;
   background_image: string;
-  parent_platforms: { platform: Platform }[];
-  metacritic: number; //Scoring number
-  rating_top: number; //Whole Number
+}
+interface FetchGameResponse {
+  count: number;
+  results: Game[];
 }
 
-const useGames = (gameQuery: GameQuery) =>
-  useData<Game>(
-    "/games",
-    {
-      params: {
-        genres: gameQuery.genre?.id,
-        platforms: gameQuery.platform?.id,
-        ordering: gameQuery.sortOrder,
-        search: gameQuery.searchText,
-      },
-    },
-    [gameQuery]
-  );
+const useGames = () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [error, setErrors] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    apiClient
+      .get<FetchGameResponse>("/games", { signal: controller.signal })
+      .then((res) => setGames(res.data.results))
+      .catch((error) => {
+        if (error instanceof CanceledError) return;
+        setErrors(error.message);
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  return { games, error };
+};
 
 export default useGames;
