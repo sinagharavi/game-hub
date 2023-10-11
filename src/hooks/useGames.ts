@@ -22,6 +22,7 @@ const useGames = (gemeQuery: GameQuery) =>
       params: {
         genres: gemeQuery.genre?.id,
         platforms: gemeQuery.platform?.id,
+        ordering: gemeQuery.sortOrder,
       },
     },
     [gemeQuery]
