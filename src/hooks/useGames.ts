@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { FetchResponse } from "../services/api-client";
+import apiClient from "../services/api-client";
 import { GameQuery } from "../App";
-import useData from "./useData";
 
 export interface Platform {
   id: number;
@@ -16,17 +18,33 @@ export interface Game {
 }
 
 const useGames = (gemeQuery: GameQuery) =>
-  useData<Game>(
-    "/games",
-    {
-      params: {
-        genres: gemeQuery.genre?.id,
-        platforms: gemeQuery.platform?.id,
-        ordering: gemeQuery.sortOrder,
-        search: gemeQuery.searchText,
-      },
-    },
-    [gemeQuery]
-  );
+  useQuery<FetchResponse<Game>, Error>({
+    queryKey: ["games", gemeQuery],
+    queryFn: () =>
+      apiClient
+        .get<FetchResponse<Game>>("/games", {
+          params: {
+            genres: gemeQuery.genre?.id,
+            parent_platforms: gemeQuery.platform?.id,
+            ordering: gemeQuery.sortOrder,
+            search: gemeQuery.searchText,
+          },
+        })
+        .then((res) => res.data),
+  });
 
 export default useGames;
+
+// const useGames = (gemeQuery: GameQuery) =>
+//   useData<Game>(
+//     "/games",
+//     {
+//       params: {
+//         genres: gemeQuery.genre?.id,
+//         platforms: gemeQuery.platform?.id,
+//         ordering: gemeQuery.sortOrder,
+//         search: gemeQuery.searchText,
+//       },
+//     },
+//     [gemeQuery]
+//   );
