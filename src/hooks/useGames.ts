@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { FetchResponse } from "../services/api-client";
-import apiClient from "../services/api-client";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import APICLient, { FetchResponse } from "../services/api-client";
 import { GameQuery } from "../App";
 import { Platform } from "./usePlatforms";
 
+const apiClient = new APICLient<Game>("/games");
 export interface Game {
   id: number;
   name: string;
@@ -14,19 +14,21 @@ export interface Game {
 }
 
 const useGames = (gemeQuery: GameQuery) =>
-  useQuery<FetchResponse<Game>, Error>({
+  useInfiniteQuery<FetchResponse<Game>, Error>({
     queryKey: ["games", gemeQuery],
-    queryFn: () =>
-      apiClient
-        .get<FetchResponse<Game>>("/games", {
-          params: {
-            genres: gemeQuery.genre?.id,
-            parent_platforms: gemeQuery.platform?.id,
-            ordering: gemeQuery.sortOrder,
-            search: gemeQuery.searchText,
-          },
-        })
-        .then((res) => res.data),
+    queryFn: ({ pageParam = 1 }) =>
+      apiClient.getAll({
+        params: {
+          genres: gemeQuery.genre?.id,
+          parent_platforms: gemeQuery.platform?.id,
+          ordering: gemeQuery.sortOrder,
+          search: gemeQuery.searchText,
+          page: pageParam,
+        },
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.next ? allPages.length + 1 : undefined;
+    },
   });
 
 export default useGames;
