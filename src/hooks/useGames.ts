@@ -19,8 +19,8 @@ const useGames = (gemeQuery: GameQuery) =>
     queryFn: ({ pageParam = 1 }) =>
       apiClient.getAll({
         params: {
-          genres: gemeQuery.genre?.id,
-          parent_platforms: gemeQuery.platform?.id,
+          genres: gemeQuery.genreId,
+          parent_platforms: gemeQuery.platformId,
           ordering: gemeQuery.sortOrder,
           search: gemeQuery.searchText,
           page: pageParam,
