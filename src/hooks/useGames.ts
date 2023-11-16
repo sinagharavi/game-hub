@@ -33,17 +33,3 @@ const useGames = (gemeQuery: GameQuery) =>
   });
 
 export default useGames;
-
-// const useGames = (gemeQuery: GameQuery) =>
-//   useData<Game>(
-//     "/games",
-//     {
-//       params: {
-//         genres: gemeQuery.genre?.id,
-//         platforms: gemeQuery.platform?.id,
-//         ordering: gemeQuery.sortOrder,
-//         search: gemeQuery.searchText,
-//       },
-//     },
-//     [gemeQuery]
-//   );
