@@ -1,11 +1,11 @@
 import { Button, Text } from "@chakra-ui/react";
 import { useState } from "react";
 
-interface props {
+interface Props {
   children: string;
 }
 
-const ExpandableText = ({ children }: props) => {
+const ExpandableText = ({ children }: Props) => {
   const [expanded, setExpanded] = useState(false);
   const limit = 300;
 
